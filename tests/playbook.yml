@@ -1,0 +1,19 @@
+---
+- hosts: all
+  become: True
+  vars:
+    postgresql_listen_port: 5555
+  pre_tasks:
+    - name: Add svcbackups user
+      user:
+        name: svcbackups
+        home: /usr/backups
+    - name: Add postgres user
+      user:
+        name: postgres
+    - name: install cronie package
+      yum:
+        name: cronie
+        state: present
+  roles:
+    - role: backup-role

@@ -1,0 +1,10 @@
+---
+
+galaxy_info:
+  author: HMCTS Reform programme
+  description: Used for deploying postgres backup scripting.
+  company: HMCTS
+
+  license: MIT
+
+dependencies: []

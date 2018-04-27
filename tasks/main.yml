@@ -1,0 +1,47 @@
+---
+- name: add postgres group
+  group:
+    name: postgres
+    state: present
+
+- name: add postgres user
+  user:
+    name: postgres
+    shell: /bin/bash
+    groups: postgres 
+    state: present
+
+- name: pgsql setup directory structure for pgsql backup scripts
+  file:
+    path: /usr/backups/scripts
+    state: directory
+    owner: svcbackups
+    mode: 0775
+
+- name: pgsql setup directory structure for pgsql backups
+  file:
+    path: /usr/backups/pgsql
+    state: directory
+    owner: postgres
+    mode: 0755
+
+- name: pgsql copy pgsql scripts and config
+  copy:
+    src: "{{ role_path }}/files/pg_backup_rotated.sh"
+    dest: /usr/backups/scripts
+    owner: postgres
+    mode: 0755
+
+- name: Generate pg_backup.config file
+  template:
+    src: pg_backup.config
+    dest: /usr/backups/scripts/pg_backup.config
+    mode: 0755
+
+- name: pgsql setup the crontab for postgres user
+  cron:
+    user: postgres
+    job: /usr/backups/scripts/pg_backup_rotated.sh
+    hour: 19
+    minute: 0
+    name: pg_backup_rotated
